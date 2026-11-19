@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b16">
+<title>عالم نور | سؤال مهم</title>
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#070b16; --card:rgba(16,24,45,.88); --text:#fff; --muted:#cbd5ef;
+  --gold:#ffd27a; --orange:#ff7a18; --amber:#ffb52e; --blue:#3882f6; --line:rgba(255,255,255,.16);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+html{background:#070b16}
+body{
+  margin:0; min-height:100vh; min-height:100dvh;
+  display:grid;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));
+  font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+  color:#fff;
+  background:#0b1226;
+  background:radial-gradient(circle at 50% 12%,#263b73 0,#101a38 38%,#070b16 78%);
+  overflow-x:hidden; overflow-y:auto; touch-action:manipulation;
+}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#stars{z-index:0}
+#confetti{z-index:50}
+.glow{position:fixed;width:260px;height:260px;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.g1{top:-60px;right:-50px;background:rgba(255,138,28,.25);animation:drift 9s ease-in-out infinite}
+.g2{bottom:-70px;left:-50px;background:rgba(56,130,246,.28);animation:drift 11s ease-in-out infinite reverse}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-25px) scale(1.2)}}
+
+.icons{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.icons span{position:absolute;bottom:-60px;font-size:28px;opacity:.55;animation:rise linear infinite}
+@keyframes rise{
+  0%{transform:translateY(0) rotate(0);opacity:0}
+  10%{opacity:.6}
+  90%{opacity:.5}
+  100%{transform:translateY(-115vh) rotate(360deg);opacity:0}
+}
+
+.card{
+  position:relative; z-index:2; width:100%; max-width:460px; margin:auto; translate:var(--tx,0px) var(--ty,0px); transition:translate .25s ease-out;
+  padding:34px 22px 26px; text-align:center;
+  border:1px solid rgba(255,255,255,.16); border-radius:28px;
+  background:rgba(16,24,45,.88); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  box-shadow:0 24px 70px rgba(0,0,0,.65);
+  animation:enter .9s cubic-bezier(.2,.9,.3,1.2) both;
+}
+.card::before{
+  content:""; position:absolute; inset:-2px; z-index:-1; border-radius:30px;
+  background:conic-gradient(from 0deg,#ff7a18,#3882f6,#ffb52e,#ff7a18);
+  opacity:.55; filter:blur(10px); animation:spin 6s linear infinite;
+}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes enter{from{opacity:0;transform:translateY(40px) scale(.9)}to{opacity:1;transform:none}}
+
+.logo{font-size:58px;line-height:1;margin-bottom:8px;display:inline-block;animation:float 3s ease-in-out infinite}
+.logo b{display:inline-block;font-weight:400;animation:pulse 1.6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 transparent)}50%{transform:scale(1.18);filter:drop-shadow(0 0 12px #ffb52e)}}
+
+h1{
+  font-size:28px; font-size:clamp(26px,7.5vw,36px); margin:6px 0 10px; line-height:1.3;
+  background:linear-gradient(90deg,#fff,#ffd27a,#fff); background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  animation:shine 3.5s linear infinite;
+}
+@keyframes shine{to{background-position:200% center}}
+#question{
+  min-height:3.6em; margin:0 0 18px; color:#cbd5ef;
+  font-size:16px; font-size:clamp(16px,4.6vw,18px); line-height:1.8;
+}
+#question.pop{animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(.85);opacity:.3}60%{transform:scale(1.07)}100%{transform:scale(1);opacity:1}}
+
+.btns{position:relative;display:flex;flex-direction:column;gap:12px;min-height:140px}
+button{
+  width:100%; border:0; border-radius:16px; padding:16px;
+  font:700 19px/1.3 inherit; font-family:inherit; cursor:pointer;
+  transition:transform .25s cubic-bezier(.3,1.5,.5,1),box-shadow .2s ease,background .2s;
+  -webkit-user-select:none; user-select:none; touch-action:manipulation;
+}
+.yes{
+  position:relative; overflow:hidden;
+  background:linear-gradient(90deg,#ffb52e,#ff7a18); color:#17100a;
+  box-shadow:0 10px 25px rgba(255,138,28,.38);
+  transform:scale(var(--ys,1)); animation:beat 2s ease-in-out infinite;
+}
+.yes::after{
+  content:""; position:absolute; top:0; bottom:0; width:40%; left:-60%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-20deg); animation:sweep 2.8s ease-in-out infinite;
+}
+@keyframes sweep{0%{left:-60%}60%,100%{left:130%}}
+@keyframes beat{
+  0%,100%{box-shadow:0 10px 25px rgba(255,138,28,.35)}
+  50%{box-shadow:0 12px 40px rgba(255,138,28,.75)}
+}
+.yes:active{transform:scale(calc(var(--ys,1) * .96))}
+.no{
+  background:#263552; color:#fff; border:1px solid rgba(255,255,255,.16);
+  transform:scale(var(--ns,1));
+}
+.no.fly{position:fixed;z-index:20;width:auto;min-width:96px;padding:12px 20px;font-size:17px;margin:0;transition:left .35s cubic-bezier(.3,1.4,.5,1),top .35s cubic-bezier(.3,1.4,.5,1),transform .25s}
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px) rotate(-2deg)}50%{transform:translateX(9px) rotate(2deg)}75%{transform:translateX(-5px)}}
+
+#win{display:none;margin-top:6px}
+#win.show{display:block;animation:pop .5s ease}
+#win p{margin:0 0 14px;color:#fff;font-size:18px;line-height:1.8}
+#win a{
+  display:block; padding:16px; border-radius:16px; text-decoration:none; font-weight:700; font-size:19px;
+  color:#17100a; background:linear-gradient(90deg,#ffb52e,#ff7a18);
+  box-shadow:0 10px 30px rgba(255,138,28,.5);
+}
+.small{font-size:12px;color:#8795b5;margin-top:22px}
+
+:focus-visible{outline:3px solid #ffd27a;outline-offset:3px}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){h1{-webkit-text-fill-color:#ffd27a;color:#ffd27a}}
+@media (max-width:360px){.card{padding:28px 16px 22px}button{font-size:17px}}
+@media (min-width:700px){.card{max-width:540px;padding:46px 40px 32px;border-radius:34px}.logo{font-size:76px}h1{font-size:40px}#question{font-size:20px}button{font-size:21px;padding:18px}.icons span{opacity:.7}}
+@media (min-width:1100px){.card{max-width:600px;padding:54px 48px 36px}h1{font-size:46px}.logo{font-size:88px}.glow{width:480px}}
+@media (hover:hover){button:hover{filter:brightness(1.08)}.yes:hover{transform:scale(calc(var(--ys,1) * 1.04))}.no:hover{background:#2f4164}}
+@media (max-height:520px) and (orientation:landscape){.card{padding:18px 20px;max-width:520px}.logo{font-size:36px;margin:0}h1{font-size:22px;margin:2px 0 6px}#question{min-height:0;margin-bottom:10px;font-size:15px}button{padding:11px;font-size:16px}.btns{min-height:0;gap:8px}.small{display:none}}
+@media (max-height:600px){.logo{font-size:44px}#question{min-height:0}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .icons,#stars{display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="glow g1"></div><div class="glow g2"></div>
+<div class="icons" id="icons" aria-hidden="true"></div>
+
+<main class="card" id="card">
+  <div class="logo" aria-hidden="true">🎮<b>⚡</b></div>
+  <h1>أهلاً بيك في عالم نور</h1>
+  <p id="question" aria-live="polite"></p>
+
+  <div class="btns" id="btns">
+    <button class="yes" id="yesBtn" type="button">❤️ أيوه، بحب الألعاب</button>
+    <button class="no" id="noBtn" type="button">😂 لأ</button>
+  </div>
+
+  <div id="win" role="status">
+    <p>🔥 كنت عارف إنك جيمر! اتفضل على القناة</p>
+    <a id="chan" href="https://www.youtube.com/@Norr-r9i" target="_blank" rel="noopener">🎮 ادخل قناة عالم نور</a>
+  </div>
+
+  <div class="small">عالم نور • Gaming Channel</div>
+</main>
+
+<script>
+(function(){
+  var URL_CH='https://www.youtube.com/@Norr-r9i';
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $=function(id){return document.getElementById(id)};
+  var q=$('question'),yes=$('yesBtn'),no=$('noBtn'),win=$('win'),btns=$('btns');
+
+  /* ---- typing effect ---- */
+  var typer;
+  function say(text){
+    clearInterval(typer);
+    q.classList.remove('pop');void q.offsetWidth;q.classList.add('pop');
+    if(reduce){q.textContent=text;return}
+    var i=0;q.textContent='';
+    typer=setInterval(function(){
+      q.textContent=text.slice(0,++i);
+      if(i>=text.length)clearInterval(typer);
+    },28);
+  }
+  say('سؤال مهم... أنت بتحب الألعاب؟ 🔥');
+
+  /* ---- floating game icons ---- */
+  var ic=['🎮','🕹️','👾','⭐','🏆','🎯','💎','🚀'],box=$('icons');
+  for(var i=0;i<12;i++){
+    var s=document.createElement('span');
+    s.textContent=ic[i%ic.length];
+    s.style.left=(Math.random()*94)+'%';
+    s.style.fontSize=(20+Math.random()*22)+'px';
+    s.style.animationDuration=(9+Math.random()*10)+'s';
+    s.style.animationDelay=(-Math.random()*14)+'s';
+    box.appendChild(s);
+  }
+
+  /* ---- shared canvas sizing (retina safe) ---- */
+  function fit(c){
+    var d=Math.min(window.devicePixelRatio||1,2);
+    c.width=innerWidth*d;c.height=innerHeight*d;
+    var x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return x;
+  }
+
+  /* ---- starfield ---- */
+  var sc=$('stars'),sx=fit(sc),stars=[],paused=false;
+  function mkStars(){
+    stars=[];var n=Math.round(Math.min(90,innerWidth*innerHeight/9000));
+    for(var i=0;i<n;i++)stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.6+.3,p:Math.random()*6.3,s:.4+Math.random()*1.4});
+  }
+  mkStars();
+  function drawStars(t){
+    if(!paused){
+      sx.clearRect(0,0,innerWidth,innerHeight);
+      for(var i=0;i<stars.length;i++){
+        var st=stars[i],a=.3+.7*Math.abs(Math.sin(t/1000*st.s+st.p));
+        sx.globalAlpha=a;sx.fillStyle=i%5===0?'#ffd27a':'#fff';
+        sx.beginPath();sx.arc(st.x,st.y,st.r,0,6.283);sx.fill();
+      }
+      sx.globalAlpha=1;
+    }
+    requestAnimationFrame(drawStars);
+  }
+  if(!reduce)requestAnimationFrame(drawStars);
+  document.addEventListener('visibilitychange',function(){paused=document.hidden});
+
+  /* ---- confetti ---- */
+  var cc=$('confetti'),cx=fit(cc),bits=[],running=false;
+  function burst(){
+    var cols=['#ffb52e','#ff7a18','#3882f6','#fff','#ffd27a','#ff5d8f'];
+    for(var i=0;i<110;i++){
+      bits.push({x:innerWidth/2,y:innerHeight*.55,vx:(Math.random()-.5)*16,vy:-Math.random()*16-4,
+        w:6+Math.random()*7,h:4+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.4,
+        c:cols[i%cols.length],life:1});
+    }
+    if(!running){running=true;requestAnimationFrame(tick)}
+  }
+  function tick(){
+    cx.clearRect(0,0,innerWidth,innerHeight);
+    for(var i=bits.length-1;i>=0;i--){
+      var b=bits[i];b.vy+=.4;b.x+=b.vx;b.y+=b.vy;b.vx*=.99;b.r+=b.vr;b.life-=.007;
+      if(b.life<=0||b.y>innerHeight+20){bits.splice(i,1);continue}
+      cx.save();cx.globalAlpha=Math.min(1,b.life*2);cx.translate(b.x,b.y);cx.rotate(b.r);
+      cx.fillStyle=b.c;cx.fillRect(-b.w/2,-b.h/2,b.w,b.h);cx.restore();
+    }
+    if(bits.length)requestAnimationFrame(tick);else{running=false;cx.clearRect(0,0,innerWidth,innerHeight)}
+  }
+
+  addEventListener('resize',function(){sx=fit(sc);cx=fit(cc);mkStars();keepNoInside()});
+
+  /* ---- the runaway "no" button ---- */
+  var jokes=[
+    'إجابتك مش مقنعة 😎',
+    'متأكد؟ الزرار ده بيهرب منك 👀',
+    'حاول تاني، لو عرفت تمسكه 😂',
+    'زرار "لأ" معطل النهاردة 🛠️',
+    'كل ما تقول لأ، زرار أيوه بيكبر 😏',
+    'خلاص استسلم وقول أيوه ❤️'
+  ];
+  var dodges=0,flying=false;
+
+  function placeNo(){
+    var r=no.getBoundingClientRect(),w=r.width||110,h=r.height||48,m=10;
+    var maxX=innerWidth-w-m,maxY=innerHeight-h-m-(parseInt(getComputedStyle(document.body).paddingBottom)||0);
+    var cr=$('card').getBoundingClientRect(),tries=0,x,y;
+    do{
+      x=m+Math.random()*Math.max(0,maxX-m);
+      y=m+Math.random()*Math.max(0,maxY-m);
+      tries++;
+      /* avoid landing on the yes button */
+      var yr=yes.getBoundingClientRect();
+      var hit=x<yr.right&&x+w>yr.left&&y<yr.bottom&&y+h>yr.top;
+    }while(hit&&tries<20);
+    no.style.left=x+'px';no.style.top=y+'px';
+  }
+  function keepNoInside(){if(flying)placeNo()}
+
+  function dodge(e){
+    if(e){e.preventDefault();e.stopPropagation()}
+    if(dodges>=jokes.length)return;
+    if(!flying){
+      var r=no.getBoundingClientRect();
+      var ph=document.createElement('div');   /* keep layout steady */
+      ph.style.height=r.height+'px';ph.id='ph';btns.appendChild(ph);
+      no.classList.add('fly');
+      no.style.left=r.left+'px';no.style.top=r.top+'px';
+      document.body.appendChild(no);
+      flying=true;
+      void no.offsetWidth;
+    }
+    say(jokes[dodges]);
+    dodges++;
+    yes.style.setProperty('--ys',Math.min(1+dodges*.05,1.3));
+    no.style.setProperty('--ns',Math.max(1-dodges*.09,.62));
+    placeNo();
+    no.classList.remove('shake');void no.offsetWidth;no.classList.add('shake');
+    if(navigator.vibrate)try{navigator.vibrate(30)}catch(_){}
+    if(dodges>=jokes.length){
+      no.textContent='😅 خلاص... أيوه';
+      no.style.setProperty('--ns',1);
+      no.classList.remove('fly');no.style.cssText='';
+      btns.appendChild(no);
+      var p=$('ph');if(p)p.remove();flying=false;
+      no.onclick=function(){ok()};
+    }
+  }
+  /* pointerenter dodges for mouse; pointerdown covers every touch phone */
+  no.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')dodge(e)});
+  no.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||dodges<jokes.length)dodge(e)});
+  no.addEventListener('click',function(e){if(dodges<jokes.length)dodge(e)});
+
+  /* ---- yes ---- */
+  var done=false;
+  function ok(){
+    if(done)return;done=true;
+    burst();setTimeout(burst,350);
+    q.textContent='';say('عفارم عليك! جيمر أصلي 🔥🎮');
+    btns.style.display='none';
+    if(flying){no.style.display='none'}
+    win.classList.add('show');
+    setTimeout(function(){
+      var w=null;try{w=window.open(URL_CH,'_blank','noopener')}catch(_){}
+      if(!w){try{location.href=URL_CH}catch(_){}}
+    },1500);
+  }
+  yes.addEventListener('click',ok);
+
+  /* desktop: card follows the mouse a little */
+  if(!reduce&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+    addEventListener('pointermove',function(e){
+      var st=$('card').style;
+      st.setProperty('--tx',((e.clientX/innerWidth-.5)*-16)+'px');
+      st.setProperty('--ty',((e.clientY/innerHeight-.5)*-16)+'px');
+    });
+  }
+})();
+</script>
+</body>
+</html>
